@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_DIR = "/home/ubuntu/nodeapp"
+    }
+
+    stages {
+        stage('Clone Repo') {
+            steps {
+                git 'https://github.com/yourname/nodeapp.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                    pkill node || true
+                    mkdir -p $APP_DIR
+                    cp -r * $APP_DIR
+                    nohup node $APP_DIR/index.js > app.log 2>&1 &
+                '''
+            }
+        }
+    }
+}
